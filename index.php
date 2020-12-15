@@ -3,9 +3,9 @@ require_once './JWT.php';
 
 $secret = 'eG?c7dQr"54L//;T';
 
-$dsn = "mysql:host=localhost;dbname=locations";
-$username = "root";
-$password = "root";
+$dsn = (isset($_ENV['dsn'])) ? $_ENV['dsn'] : "mysql:host=localhost;dbname=locations";
+$username = (isset($_ENV['username'])) ? $_ENV['username'] : "root";
+$password = (isset($_ENV['password'])) ? $_ENV['password'] : "root";
 
 // Create connection
 try {
@@ -108,16 +108,16 @@ switch ($action) {
         ]
       ];
       $statusCode = 400;
+    } else {
+      // Register the user with it's suername
+      $key = registerUser($_GET['username']);
+  
+      // Return key generated or an error if no key
+      $responseBody = ($key == NULL) ? generalResponse('general-error')['response'] : [
+        'key' => $key
+      ];
+      $statusCode = ($key == NULL) ? generalResponse('general-error')['code'] : 200;
     }
-
-    // Register the user with it's suername
-    $key = registerUser($_GET['username']);
-
-    // Return key generated or an error if no key
-    $responseBody = ($key == NULL) ? generalResponse('general-error')['response'] : [
-      'key' => $key
-    ];
-    $statusCode = ($key == NULL) ? generalResponse('general-error')['code'] : 200;
     break;
 
   case "countries":
